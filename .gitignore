@@ -1,0 +1,15 @@
+# Entorno virtual específico del proyecto
+venvDP1/
+
+# Carpetas de datos (ajusta los nombres si son distintos)
+datos/
+data/
+
+# Credenciales privadas (¡Muy importante!)
+kaggle.json
+.kaggle/
+
+# Archivos temporales de Python y Jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
