@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[68]:
-
-
 # We will extract our firs files
 import os
 import zipfile
@@ -140,16 +137,14 @@ changes = {
 }
 
 # Path to the zip file
-zip_path = (
-    r"C:\Users\Cristian des\Downloads\API_VC.IHR.PSRC.P5_DS2_en_csv_v2_115572.zip"
-)
+zip_path = (r"C:\Users\Cristian des\Downloads\API_VC.IHR.PSRC.P5_DS2_en_csv_v2_115572.zip")
 
 # Define the path to extract the files
 extract_path = r"C:\Users\Cristian des\OneDrive\Documentos\Programación\Proyecto_propios_Data\Python\DataProject1\data"
 
 with zipfile.ZipFile(zip_path, "r") as zip_ref:
     files = zip_ref.namelist()
-    print("Archivos encontrados:", files)
+    #print("Archivos encontrados:", files)
 
     # Filter, exclude filed that begin with API
     files_to_extract = [f for f in files if f.startswith("API")]
@@ -157,11 +152,7 @@ with zipfile.ZipFile(zip_path, "r") as zip_ref:
     # To extract the files who fulfill the conditions
     for f in files_to_extract:
         zip_ref.extract(f, extract_path)
-        print(f"Extraído: {f}")
-
-
-# In[69]:
-
+        #print(f"Extraído: {f}")
 
 # Now we will convert each file to a dataframe and look the head of each one to see what we have in each file
 
@@ -184,9 +175,7 @@ Tabla = [
 # Create a single DataFrame by concatenating all the individual DataFrames
 df_Data = pd.concat(Tabla, ignore_index=True)
 df_Data1 = df_Data[~df_Data["Country Name"].str.strip().str.lower().isin(errors)]
-df_Data1["Country Name"] = (
-    df_Data1["Country Name"].str.strip().str.lower().replace(changes)
-)
+df_Data1["Country Name"] = (df_Data1["Country Name"].str.strip().str.lower().replace(changes))
 df_data_long = df_Data1.melt(
     id_vars=["Country Name", "Country Code", "Indicator Name", "Indicator Code"],
     var_name="Year",
@@ -198,10 +187,18 @@ df_data_long["Year"] = pd.to_numeric(df_data_long["Year"], errors="coerce")
 df_data_long = df_data_long.dropna(subset=["Year"])
 df_data_long["Year"] = df_data_long["Year"].astype(int)
 
-
 # Create a dataframe from the files obtained from Kaggle's dataset
 df_financeData = pd.read_csv("./datos/Finance_data.csv")
+df_financeData = df_financeData.melt(id_vars= ["gender", "age"], var_name="Indicator Name", value_name="Value")
+df_financeData["age"] = df_financeData["age"].astype(int)
+
+
+
 df_OriginalData = pd.read_csv("./datos/Original_data.csv")
+df_OriginalData = df_OriginalData.melt(id_vars= ["GENDER", "AGE"], var_name="Indicator Name", value_name="Value")
+df_OriginalData["AGE"] = df_OriginalData["AGE"].astype(int)
+
+
 df_country = pd.read_excel("./datos/countries.xlsx")
 df_country["Country"] = df_country["Country"].str.strip().str.lower()
 
@@ -213,36 +210,14 @@ df_data_long = df_data_long.merge(
     how="left",
 )
 
-df_data_long["Group"] = (
-    df_data_long["Country Name"] + " - " + df_data_long["Indicator Name"]
-)
+df_data_long["Group"] = (df_data_long["Country Name"] + " - " + df_data_long["Indicator Name"])
 
 # Save the countries without region to an Excel file
-df_data_long[["Country Name", "Region"]][
-    df_data_long["Region"].isnull()
-].drop_duplicates().to_excel("./countries_without_region.xlsx", index=False)
-
-# In[70]:
-
-
-print(df_data_long.head(5))
-
-
-# In[72]:
-
-
-""" 
-We will define the questions to answer:
-
-- Are there any relation ship between the indicators of the World Bank Data?
-- Wich is the country with the best economic performance in the last 10 years?
-- Are there a relationship between the economic performance and security indicators? 
-- Are there any relaionship between the indicators of the World Bank Data and the Data's dataframe?
-"""
+df_data_long[["Country Name", "Region"]][df_data_long["Region"].isnull()].drop_duplicates().to_excel("./countries_without_region.xlsx", index=False)
 
 # - Are there any relation ship between the indicators of the World Bank Data?
 
-st.title("Countries indicators")
+st.title("Indicators")
 
 modo = st.radio("Do you want to group by:", ["Country", "Region"])
 
@@ -251,6 +226,7 @@ indicator = st.multiselect(
 )
 
 if modo == "Country":
+    st.subheader("Country")
     country = st.multiselect("Select a country", df_data_long["Country Name"].unique())
     df_plot = df_data_long[
         df_data_long["Country Name"].isin(country)
@@ -258,6 +234,7 @@ if modo == "Country":
     ].copy()
     df_plot["Grupo"] = df_plot["Country Name"] + " - " + df_plot["Indicator Name"]
 else:
+    st.subheader("Region")
     region = st.multiselect("Select a region", df_data_long["Region"].unique())
     df_region = df_data_long[
         df_data_long["Region"].isin(region)
@@ -268,7 +245,6 @@ else:
     ].mean()
     df_region["Grupo"] = df_region["Region"] + " - " + df_region["Indicator Name"]
     df_plot = df_region
-
 chart = (
     alt.Chart(df_plot)
     .mark_line(point=True)
@@ -276,5 +252,64 @@ chart = (
         x="Year:O", y="Value:Q", color="Grupo:N", tooltip=["Year", "Grupo", "Value"]
     )
 )
+st.altair_chart(chart, use_container_width=True)
 
+st.subheader("Finance Data")
+
+min = df_financeData["age"].min()
+max = df_financeData["age"].max()
+
+ind = st.multiselect("Select indicators to see", df_financeData["Indicator Name"].unique(), key="Indicator")
+gender = st.multiselect("Select gender to see", df_financeData["gender"].unique(), key="gender")
+age = st.slider("Select age range",min_value=min,max_value=max,value=(min, max), key="age") 
+
+df_finance = df_financeData[
+    df_financeData["Indicator Name"].isin(ind) &
+    df_financeData["gender"].isin(gender) &
+    df_financeData["age"].isin(age)
+].copy()
+
+df_finance = df_finance.groupby(["gender","age","Indicator Name"], as_index=False)["Value"].count()
+
+chart = (
+    alt.Chart(df_finance)
+    .mark_bar()
+    .encode(
+        x="Indicator Name:N",   # cada indicador será una barra
+        y="Value:Q",            # altura de la barra
+        color="Indicator Name:N", # color por indicador
+        column="gender:N",      # divide el gráfico en columnas por género
+        tooltip=["gender", "age", "Indicator Name", "Value"]
+    )
+)
+st.altair_chart(chart, use_container_width=True)
+
+st.subheader("Original Data")
+
+MIN = df_OriginalData["AGE"].min()
+MAX = df_OriginalData["AGE"].max()
+
+IND= st.multiselect("Select indicators to see", df_OriginalData["Indicator Name"].unique(), key="INDICATOR")
+GENDER = st.multiselect("Select gender to see", df_OriginalData["GENDER"].unique(), key="GENDER")
+AGE = st.slider("Select age range", min_value=MIN, max_value=MAX, value=(MIN, MAX), key="AGE")
+
+df_original = df_OriginalData[
+    df_OriginalData["Indicator Name"].isin(IND) &
+    df_OriginalData["GENDER"].isin(GENDER) &
+    df_OriginalData["AGE"].isin(AGE)
+].copy()
+
+df_original = df_original.groupby(["GENDER","AGE","Indicator Name"], as_index=False)["Value"].count()
+
+chart = (
+    alt.Chart(df_original)
+    .mark_bar()
+    .encode(
+        x="Indicator Name:N",   # cada indicador será una barra
+        y="Value:Q",            # altura de la barra
+        color="Indicator Name:N", # color por indicador
+        column="GENDER:N",      # divide el gráfico en columnas por género
+        tooltip=["GENDER", "AGE", "Indicator Name", "Value"]
+    )
+)
 st.altair_chart(chart, use_container_width=True)
