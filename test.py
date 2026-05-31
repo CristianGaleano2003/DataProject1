@@ -141,18 +141,6 @@ zip_path = (r"./ZIP_file")
 # Define the path to extract the files
 extract_path = r"./data"
 
-with zipfile.ZipFile(zip_path, "r") as zip_ref:
-    files = zip_ref.namelist()
-    #print("Archivos encontrados:", files)
-
-    # Filter, exclude filed that begin with API
-    files_to_extract = [f for f in files if f.startswith("API")]
-
-    # To extract the files who fulfill the conditions
-    for f in files_to_extract:
-        zip_ref.extract(f, extract_path)
-        #print(f"Extraído: {f}")
-
 # Now we will convert each file to a dataframe and look the head of each one to see what we have in each file
 
 # Path of the folder where we have the files downloaded from Data Bank
