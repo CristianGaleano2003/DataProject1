@@ -4,7 +4,6 @@
 # We will extract our firs files
 import os
 import zipfile
-
 import altair as alt
 import pandas as pd
 import streamlit as st
@@ -157,7 +156,7 @@ with zipfile.ZipFile(zip_path, "r") as zip_ref:
 # Now we will convert each file to a dataframe and look the head of each one to see what we have in each file
 
 # Path of the folder where we have the files downloaded from Data Bank
-folder = r"C:\Users\Cristian des\OneDrive\Documentos\Programación\Proyecto_propios_Data\Python\DataProject1\data"
+folder = r"./data"
 archivos = os.listdir("./datos")
 
 # Definite the appi in Kaggle and get the data from the dataset
