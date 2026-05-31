@@ -237,9 +237,9 @@ chart = (
     .mark_line(point=True)
     .encode(
         x="Year:O", y="Value:Q", color="Grupo:N", tooltip=["Year", "Grupo", "Value"]
-    )
+    ).properties(width=600, height=400)
 )
-st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart.properties(width=600, height=400))
 
 st.subheader("Finance Data")
 
@@ -264,12 +264,12 @@ chart = (
     .encode(
         x="Indicator Name:N",   # cada indicador será una barra
         y="Value:Q",            # altura de la barra
-        color="Indicator Name:N", # color por indicador
-        column="gender:N",      # divide el gráfico en columnas por género
+        color="gender:N", # color por indicador
+        xOffset = "gender:N",
         tooltip=["gender", "age", "Indicator Name", "Value"]
-    )
+    ).properties(width=600, height=400)
 )
-st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart.properties(width=600, height=400))
 
 st.subheader("Original Data")
 
@@ -294,9 +294,9 @@ chart = (
     .encode(
         x="Indicator Name:N",   # cada indicador será una barra
         y="Value:Q",            # altura de la barra
-        color="Indicator Name:N", # color por indicador
-        column="GENDER:N",      # divide el gráfico en columnas por género
+        color="GENDER:N", # color por indicador
+        xOffset = "GENDER:N",
         tooltip=["GENDER", "AGE", "Indicator Name", "Value"]
-    )
+    ).properties(width=600, height=400)
 )
-st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart.properties(width=600, height=400))
