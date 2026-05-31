@@ -1,11 +1,6 @@
 # Entorno virtual específico del proyecto
 venvDP1/
 
-# Carpetas de datos (ajusta los nombres si son distintos)
-datos/
-data/
-ZIP_file/
-
 # Credenciales privadas (¡Muy importante!)
 kaggle.json
 .kaggle/

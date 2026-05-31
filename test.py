@@ -137,10 +137,10 @@ changes = {
 }
 
 # Path to the zip file
-zip_path = (r"C:\Users\Cristian des\OneDrive\Documentos\Programación\Proyecto_propios_Data\Python\DataProject1\ZIP_file")
+zip_path = (r"./ZIP_file")
 
 # Define the path to extract the files
-extract_path = r"C:\Users\Cristian des\OneDrive\Documentos\Programación\Proyecto_propios_Data\Python\DataProject1\data"
+extract_path = r"./data"
 
 with zipfile.ZipFile(zip_path, "r") as zip_ref:
     files = zip_ref.namelist()
